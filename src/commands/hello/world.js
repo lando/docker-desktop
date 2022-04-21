@@ -1,17 +1,19 @@
 const {Command} = require('@oclif/core');
 
 class World extends Command {
-  static description = 'Say hello world'
+  static description = 'Say hello world';
 
   static examples = [
-    `$ oex hello world
+    `$ docker-desktop hello world
 hello world! (./src/commands/hello/world.ts)
 `,
-  ]
+  ];
 
-  static flags = {}
+  static strict = false;
 
-  static args = []
+  static flags = {};
+
+  static args = [];
 
   async run() {
     this.log('hello world! (./src/commands/hello/world.ts)');

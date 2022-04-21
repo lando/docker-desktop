@@ -30,9 +30,9 @@
     "/utils"
   ],
   "dependencies": {
+    "@lando/argv": "^1.1.0",
     "@oclif/core": "^1",
-    "@oclif/plugin-help": "^5",
-    "@oclif/plugin-plugins": "^2.0.1"
+    "@oclif/plugin-help": "^5"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
@@ -52,7 +52,7 @@
   "scripts": {
     "build": "shx rm -rf dist && pkg -c package.json -t node14 bin/hyperdrive",
     "lint": "eslint bin/docker-desktop . --ext .js --config .eslintrc",
-    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "test": "mocha --forbid-only \"test/**/*.test.js\"",
     "release": "bump --prompt --tag --all --push"
   },
   "babel": {},
@@ -61,8 +61,7 @@
     "dirname": "docker-desktop",
     "commands": "./src/commands",
     "plugins": [
-      "@oclif/plugin-help",
-      "@oclif/plugin-plugins"
+      "@oclif/plugin-help"
     ],
     "topicSeparator": " ",
     "topics": {
