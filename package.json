@@ -50,7 +50,7 @@
     "version-bump-prompt": "^6.1.0"
   },
   "scripts": {
-    "build": "shx rm -rf dist && pkg -c package.json -t node14 bin/hyperdrive",
+    "build": "shx rm -rf dist && pkg -c package.json -t node14 bin/docker-desktop",
     "lint": "eslint bin/docker-desktop . --ext .js --config .eslintrc",
     "test": "mocha --forbid-only \"test/**/*.test.js\"",
     "release": "bump --prompt --tag --all --push"
