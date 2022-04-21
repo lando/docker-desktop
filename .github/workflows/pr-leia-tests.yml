@@ -29,12 +29,15 @@ jobs:
       - name: Install Yarn dependencies
         run: yarn install --prefer-offline --frozen-lockfile
 
-      - name: Build package
+      - name: Build package and PATH it
         shell: bash
         run: |
+          mkdir -p "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          echo "{path}" >> $GITHUB_PATH
           yarn build
-          sudo mv ./dist/@lando/docker-desktop /usr/local/bin/docker-desktop
-          sudo chmod +x /usr/local/bin/docker-desktop
+          mv ./dist/@lando/docker-desktop "$HOME/.local/bin/docker-desktop"
+          chmod +x "$HOME/.local/bin/docker-desktop"
       - name: Verify package
         run: docker-desktop
       - name: Run leia tests
