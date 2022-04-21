@@ -34,11 +34,12 @@ jobs:
         run: |
           mkdir -p "$HOME/.local/bin"
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-          echo "{path}" >> $GITHUB_PATH
+          echo "$PATH"
           yarn build
           mv ./dist/@lando/docker-desktop "$HOME/.local/bin/docker-desktop"
           chmod +x "$HOME/.local/bin/docker-desktop"
       - name: Verify package
+        shell: bash
         run: docker-desktop
       - name: Run leia tests
         shell: bash
