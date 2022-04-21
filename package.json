@@ -59,7 +59,7 @@
   "oclif": {
     "bin": "docker-desktop",
     "dirname": "docker-desktop",
-    "commands": "./src/commands",
+    "commands": "./cli/commands",
     "plugins": [
       "@oclif/plugin-help"
     ],
