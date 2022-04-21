@@ -30,6 +30,7 @@ jobs:
         run: yarn install --prefer-offline --frozen-lockfile
 
       - name: Build package
+        shell: bash
         run: |
           yarn build
           sudo mv ./dist/@lando/docker-desktop /usr/local/bin/docker-desktop
