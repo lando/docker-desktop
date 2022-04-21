@@ -34,7 +34,7 @@ jobs:
       - name: Reset version if needed
         run: |
           git describe --tags --abbrev=1 && yarn bump "$(git describe --tags --abbrev=1 | cut -c2-)" package.json || echo "No tags yet. Skipping..."
-          node ./bin/docker-desktop version
+          node ./bin/docker-desktop
       - name: Package into node binary
         uses: lando/pkg-action@v2
         with:
