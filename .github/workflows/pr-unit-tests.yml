@@ -1,0 +1,31 @@
+name: Run Units Tests
+
+on:
+  pull_request:
+
+jobs:
+  unit-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - windows-2022
+          - ubuntu-20.04
+          - macos-11
+        node-version:
+          - '14'
+    steps:
+      # Install deps and cache
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install node ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+      - name: Install Yarn dependencies
+        run: yarn install --prefer-offline --frozen-lockfile
+
+      # Lint Code
+      - name: Lint code
+        run: yarn test

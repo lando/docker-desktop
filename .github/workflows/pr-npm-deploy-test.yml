@@ -1,0 +1,31 @@
+name: Test NPM Deploy
+
+on:
+  pull_request:
+
+jobs:
+  npm-deploy-tests:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-20.04
+        node-version:
+          - '14'
+    steps:
+      # Install deps and cache
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install node ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+      - name: Install Yarn dependencies
+        run: yarn install --prefer-offline --frozen-lockfile
+
+      # Dry run tests publish
+      - name: Test deploy
+        run: npm publish --access public --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_DEPLOY_TOKEN}}
