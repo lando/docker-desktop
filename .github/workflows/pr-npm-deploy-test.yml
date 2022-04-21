@@ -1,17 +1,15 @@
-name: Run Units Tests
+name: Test NPM Deploy
 
 on:
   pull_request:
 
 jobs:
-  unit-tests:
+  npm-deploy-tests:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os:
-          - windows-2022
           - ubuntu-20.04
-          - macos-11
         node-version:
           - '14'
     steps:
@@ -26,6 +24,8 @@ jobs:
       - name: Install Yarn dependencies
         run: yarn install --prefer-offline --frozen-lockfile
 
-      # Lint Code
-      - name: Lint code
-        run: yarn test
+      # Dry run tests publish
+      - name: Test deploy
+        run: npm publish --access public --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_DEPLOY_TOKEN}}
