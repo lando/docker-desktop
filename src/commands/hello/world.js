@@ -1,6 +1,6 @@
-import {Command} from '@oclif/core'
+const {Command} = require('@oclif/core');
 
-export default class World extends Command {
+class World extends Command {
   static description = 'Say hello world'
 
   static examples = [
@@ -13,7 +13,9 @@ hello world! (./src/commands/hello/world.ts)
 
   static args = []
 
-  async run(): Promise<void> {
-    this.log('hello world! (./src/commands/hello/world.ts)')
+  async run() {
+    this.log('hello world! (./src/commands/hello/world.ts)');
   }
 }
+
+module.exports = World;

@@ -1,334 +1,92 @@
-oclif-hello-world
-=================
+# Autodeploy Action
 
-oclif example Hello World CLI
+This is a GitHub action that allows you to automatically deploy new packages from a source repo to various dependent repos.
 
-[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/oclif-hello-world.svg)](https://npmjs.org/package/oclif-hello-world)
-[![CircleCI](https://circleci.com/gh/oclif/hello-world/tree/main.svg?style=shield)](https://circleci.com/gh/oclif/hello-world/tree/main)
-[![Downloads/week](https://img.shields.io/npm/dw/oclif-hello-world.svg)](https://npmjs.org/package/oclif-hello-world)
-[![License](https://img.shields.io/npm/l/oclif-hello-world.svg)](https://github.com/oclif/hello-world/blob/main/package.json)
+A concrete example would be you have 30 [Vuepress](https://vuepress.vuejs.org/) sites that rely on a custom theme. When that custom theme pushes a new stable release to `npm` it also automatically opens a pull request on all 30 sites with the updated `npm` pacakge.
 
-<!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
-<!-- tocstop -->
-# Usage
-<!-- usage -->
-```sh-session
-$ npm install -g docker-desktop
-$ docker-desktop COMMAND
-running command...
-$ docker-desktop (--version)
-docker-desktop/0.0.0 darwin-x64 node-v14.17.5
-$ docker-desktop --help [COMMAND]
-USAGE
-  $ docker-desktop COMMAND
-...
-```
-<!-- usagestop -->
-# Commands
-<!-- commands -->
-* [`docker-desktop hello PERSON`](#docker-desktop-hello-person)
-* [`docker-desktop hello world`](#docker-desktop-hello-world)
-* [`docker-desktop help [COMMAND]`](#docker-desktop-help-command)
-* [`docker-desktop plugins`](#docker-desktop-plugins)
-* [`docker-desktop plugins:install PLUGIN...`](#docker-desktop-pluginsinstall-plugin)
-* [`docker-desktop plugins:inspect PLUGIN...`](#docker-desktop-pluginsinspect-plugin)
-* [`docker-desktop plugins:install PLUGIN...`](#docker-desktop-pluginsinstall-plugin-1)
-* [`docker-desktop plugins:link PLUGIN`](#docker-desktop-pluginslink-plugin)
-* [`docker-desktop plugins:uninstall PLUGIN...`](#docker-desktop-pluginsuninstall-plugin)
-* [`docker-desktop plugins:uninstall PLUGIN...`](#docker-desktop-pluginsuninstall-plugin-1)
-* [`docker-desktop plugins:uninstall PLUGIN...`](#docker-desktop-pluginsuninstall-plugin-2)
-* [`docker-desktop plugins update`](#docker-desktop-plugins-update)
+In this way it is _sorta_ like `dependapot` except that the source repo **pushes** updates to its dependents as opposed to the dependent periodically looking for upstream updates.
 
-## `docker-desktop hello PERSON`
+It currently comes with the following caveats:
 
-Say hello
+#### Caveats
 
-```
-USAGE
-  $ docker-desktop hello [PERSON] -f <value>
+* Only works with `yarn` and `npm` as package managers (would love to add support for `composer`, `pip` etc)
+* Only works with `npm`, `yarn` and `github` as "upstream" registries
+* Only works `GitHub` repo to `GitHub` repo
+* User is responsible for installing any underlying deps (eg `node` and `yarn`) required by this action
 
-ARGUMENTS
-  PERSON  Person to say hello to
+## Required Inputs
 
-FLAGS
-  -f, --from=<value>  (required) Whom is saying hello
+These keys must be set correctly for the action to work.
 
-DESCRIPTION
-  Say hello
+| Name | Description | Example Value |
+|---|---|---|
+| `slug` | The GitHub repo slug you want to deploy the update package to.  | `lando/php` |
 
-EXAMPLES
-  $ oex hello friend --from oclif
-  hello friend from oclif! (./src/commands/hello/index.ts)
-```
+## Optional Inputs
 
-_See code: [dist/commands/hello/index.ts](https://github.com/lando/docker-desktop/blob/v0.0.0/dist/commands/hello/index.ts)_
+These keys are set to sane defaults but can be modified as needed.
 
-## `docker-desktop hello world`
+| Name | Description | Default | Example |
+|---|---|---|---|
+| `args` | Extra options to pass into the manager update command. | "" | `--dev` |
+| `branch` | The branch to deploy the updated package to. | Automatically created. If `pr` is `false` then the Default branch for `slug`. | `master` |
+| `manager` | The package manager to use for updating. | `yarn` | `yarn` \| `npm` |
+| `package` | The name of the package to update. | Set based on `registry` | `@lando/php` |
+| `pr` | Open a pull request with the change. | `true` | `false` |
+| `pr-base` | The base branch to open the PR against. | `main` | `master` |
+| `registry` | The place we should get the updated package from. | `npm` | `yarn` \| `npm` \| `github` |
+| `separator` | The character that separates the `package` and `version` in the package manager update command  | Set based on `registry` | `@` |
+| `token` | [GitHub Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with permission to `read/write` to target `slug` | `${{ github.token }}`. | `MYTOKEN` |
+| `version` | The version of the package to update to. | Set based on `registry` | `1.3.2` |
 
-Say hello world
+## Testing Inputs
 
-```
-USAGE
-  $ docker-desktop hello world
+These keys are usually not needed but can be useful for testing.
 
-DESCRIPTION
-  Say hello world
+| Name | Description | Default | Example |
+|---|---|---|---|
+| `deploy` | Toggle to disable deployment. Will `--dry-run` the `git push`. | `true` | `false` |
+| `update` | Toggle to disable updating. | `true` | `false` |
 
-EXAMPLES
-  $ oex hello world
-  hello world! (./src/commands/hello/world.ts)
+## Outputs
+
+These outputs are mostly used internally but are nonetheless available.
+
+```yaml
+outputs:
+  branch:
+    description: "The branch to deploy to."
+    value: ${{ steps.auto-deploy-action.outputs.branch }}
+  package:
+    description: "The package name from user or manifest file to auto deploy."
+    value: ${{ steps.auto-deploy-action.outputs.package }}
+  version:
+    description: "The package version from user or manifest file to auto deploy."
+    value: ${{ steps.auto-deploy-action.outputs.version }}
+  separator:
+    description: "The separator between package and version"
+    value: ${{ steps.auto-deploy-action.outputs.separator }}
 ```
 
-## `docker-desktop help [COMMAND]`
+## Changelog
 
-Display help for docker-desktop.
+We try to log all changes big and small in both [THE CHANGELOG](https://github.com/lando/auto-deploy-action/blob/main/CHANGELOG.md) and the [release notes](https://github.com/lando/auto-deploy-action/releases).
 
-```
-USAGE
-  $ docker-desktop help [COMMAND] [-n]
+## Releasing
 
-ARGUMENTS
-  COMMAND  Command to show help for.
-
-FLAGS
-  -n, --nested-commands  Include all nested commands in the output.
-
-DESCRIPTION
-  Display help for docker-desktop.
+```bash
+yarn release
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.10/src/commands/help.ts)_
+## Contributors
 
-## `docker-desktop plugins`
+<a href="https://github.com/lando/auto-deploy-action/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=lando/auto-deploy-action" />
+</a>
 
-List installed plugins.
+Made with [contrib.rocks](https://contrib.rocks).
 
-```
-USAGE
-  $ docker-desktop plugins [--core]
+## Other Resources
 
-FLAGS
-  --core  Show core plugins.
-
-DESCRIPTION
-  List installed plugins.
-
-EXAMPLES
-  $ docker-desktop plugins
-```
-
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.0.11/src/commands/plugins/index.ts)_
-
-## `docker-desktop plugins:install PLUGIN...`
-
-Installs a plugin into the CLI.
-
-```
-USAGE
-  $ docker-desktop plugins:install PLUGIN...
-
-ARGUMENTS
-  PLUGIN  Plugin to install.
-
-FLAGS
-  -f, --force    Run yarn install with force flag.
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Installs a plugin into the CLI.
-
-  Can be installed from npm or a git url.
-
-  Installation of a user-installed plugin will override a core plugin.
-
-  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
-  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
-  the CLI without the need to patch and update the whole CLI.
-
-ALIASES
-  $ docker-desktop plugins add
-
-EXAMPLES
-  $ docker-desktop plugins:install myplugin 
-
-  $ docker-desktop plugins:install https://github.com/someuser/someplugin
-
-  $ docker-desktop plugins:install someuser/someplugin
-```
-
-## `docker-desktop plugins:inspect PLUGIN...`
-
-Displays installation properties of a plugin.
-
-```
-USAGE
-  $ docker-desktop plugins:inspect PLUGIN...
-
-ARGUMENTS
-  PLUGIN  [default: .] Plugin to inspect.
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Displays installation properties of a plugin.
-
-EXAMPLES
-  $ docker-desktop plugins:inspect myplugin
-```
-
-## `docker-desktop plugins:install PLUGIN...`
-
-Installs a plugin into the CLI.
-
-```
-USAGE
-  $ docker-desktop plugins:install PLUGIN...
-
-ARGUMENTS
-  PLUGIN  Plugin to install.
-
-FLAGS
-  -f, --force    Run yarn install with force flag.
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Installs a plugin into the CLI.
-
-  Can be installed from npm or a git url.
-
-  Installation of a user-installed plugin will override a core plugin.
-
-  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
-  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
-  the CLI without the need to patch and update the whole CLI.
-
-ALIASES
-  $ docker-desktop plugins add
-
-EXAMPLES
-  $ docker-desktop plugins:install myplugin 
-
-  $ docker-desktop plugins:install https://github.com/someuser/someplugin
-
-  $ docker-desktop plugins:install someuser/someplugin
-```
-
-## `docker-desktop plugins:link PLUGIN`
-
-Links a plugin into the CLI for development.
-
-```
-USAGE
-  $ docker-desktop plugins:link PLUGIN
-
-ARGUMENTS
-  PATH  [default: .] path to plugin
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Links a plugin into the CLI for development.
-
-  Installation of a linked plugin will override a user-installed or core plugin.
-
-  e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
-  command will override the user-installed or core plugin implementation. This is useful for development work.
-
-EXAMPLES
-  $ docker-desktop plugins:link myplugin
-```
-
-## `docker-desktop plugins:uninstall PLUGIN...`
-
-Removes a plugin from the CLI.
-
-```
-USAGE
-  $ docker-desktop plugins:uninstall PLUGIN...
-
-ARGUMENTS
-  PLUGIN  plugin to uninstall
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Removes a plugin from the CLI.
-
-ALIASES
-  $ docker-desktop plugins unlink
-  $ docker-desktop plugins remove
-```
-
-## `docker-desktop plugins:uninstall PLUGIN...`
-
-Removes a plugin from the CLI.
-
-```
-USAGE
-  $ docker-desktop plugins:uninstall PLUGIN...
-
-ARGUMENTS
-  PLUGIN  plugin to uninstall
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Removes a plugin from the CLI.
-
-ALIASES
-  $ docker-desktop plugins unlink
-  $ docker-desktop plugins remove
-```
-
-## `docker-desktop plugins:uninstall PLUGIN...`
-
-Removes a plugin from the CLI.
-
-```
-USAGE
-  $ docker-desktop plugins:uninstall PLUGIN...
-
-ARGUMENTS
-  PLUGIN  plugin to uninstall
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Removes a plugin from the CLI.
-
-ALIASES
-  $ docker-desktop plugins unlink
-  $ docker-desktop plugins remove
-```
-
-## `docker-desktop plugins update`
-
-Update installed plugins.
-
-```
-USAGE
-  $ docker-desktop plugins update [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Update installed plugins.
-```
-<!-- commandsstop -->
+* [Important advice](https://www.youtube.com/watch?v=WA4iX5D9Z64)

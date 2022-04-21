@@ -1,6 +1,6 @@
-import {Command, Flags} from '@oclif/core'
+const {Command, Flags} = require('@oclif/core');
 
-export default class Hello extends Command {
+class Hello extends Command {
   static description = 'Say hello'
 
   static examples = [
@@ -15,9 +15,11 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 
   static args = [{name: 'person', description: 'Person to say hello to', required: true}]
 
-  async run(): Promise<void> {
-    const {args, flags} = await this.parse(Hello)
-
-    this.log(`hello ${args.person} from ${flags.from}! (./src/commands/hello/index.ts)`)
+  async run() {
+    const {args, flags} = await this.parse(Hello);
+    this.log(`hello ${args.person} from ${flags.from}! (./src/commands/hello/index.ts)`);
   }
 }
+
+module.exports = Hello;
+

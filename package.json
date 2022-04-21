@@ -1,20 +1,33 @@
 {
-  "name": "docker-desktop",
-  "version": "0.0.0",
-  "description": "oclif example Hello World CLI",
+  "name": "@lando/docker-desktop",
+  "version": "4.0.0-alpha.0",
+  "description": "A node library and CLI for managing Docker Desktop.",
   "author": "Mike Pirog @pirog",
-  "bin": {
-    "docker-desktop": "./bin/run"
-  },
-  "homepage": "https://github.com/lando/docker-desktop",
-  "license": "MIT",
-  "main": "dist/index.js",
+  "license": "GPL-3.0",
   "repository": "lando/docker-desktop",
+  "bugs": "https://github.com/lando/docker-desktop/issues",
+  "homepage": "https://github.com/lando/docker-desktop",
+  "keywords": [
+    "docker",
+    "lando",
+    "oclif"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "main": "lib/docker-desktop.js",
+  "bin": {
+    "docker-desktop": "./bin/docker-desktop"
+  },
   "files": [
     "/bin",
-    "/dist",
+    "/cli",
+    "/lib",
     "/npm-shrinkwrap.json",
-    "/oclif.manifest.json"
+    "/oclif.manifest.json",
+    "/scripts",
+    "/src",
+    "/utils"
   ],
   "dependencies": {
     "@oclif/core": "^1",
@@ -22,26 +35,31 @@
     "@oclif/plugin-plugins": "^2.0.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@babel/eslint-parser": "^7.15.7",
+    "@lando/leia": "^0.6.4",
     "@oclif/test": "^2",
-    "@types/chai": "^4",
-    "@types/mocha": "^9.1.0",
-    "@types/node": "^16.9.4",
     "chai": "^4",
     "eslint": "^7.32.0",
     "eslint-config-oclif": "^4",
-    "eslint-config-oclif-typescript": "^1.0.2",
     "globby": "^11",
     "mocha": "^9",
     "oclif": "^2",
+    "pkg": "^5.6.0",
     "shx": "^0.3.3",
-    "ts-node": "^10.7.0",
-    "tslib": "^2.3.1",
-    "typescript": "^4.6.3"
+    "version-bump-prompt": "^6.1.0"
   },
+  "scripts": {
+    "build": "shx rm -rf dist && pkg -c package.json -t node14 bin/hyperdrive",
+    "lint": "eslint bin/docker-desktop . --ext .js --config .eslintrc",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "release": "bump --prompt --tag --all --push"
+  },
+  "babel": {},
   "oclif": {
     "bin": "docker-desktop",
     "dirname": "docker-desktop",
-    "commands": "./dist/commands",
+    "commands": "./src/commands",
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-plugins"
@@ -53,21 +71,16 @@
       }
     }
   },
-  "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
-    "lint": "eslint . --ext .ts --config .eslintrc",
-    "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "yarn lint",
-    "prepack": "yarn build && oclif manifest && oclif readme",
-    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
-    "version": "oclif readme && git add README.md"
-  },
-  "engines": {
-    "node": ">=12.0.0"
-  },
-  "bugs": "https://github.com/lando/docker-desktop/issues",
-  "keywords": [
-    "oclif"
-  ],
-  "types": "dist/index.d.ts"
+  "pkg": {
+    "outputPath": "dist",
+    "scripts": [
+      "bin/*.js",
+      "lib/*.js",
+      "cli/**/*.js"
+    ],
+    "assets": [
+      "package.json",
+      "yarn.lock"
+    ]
+  }
 }

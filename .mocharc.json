@@ -1,10 +1,6 @@
 {
   "require": [
-    "test/helpers/init.js",
-    "ts-node/register"
-  ],
-  "watch-extensions": [
-    "ts"
+    "test/helpers/init.js"
   ],
   "recursive": true,
   "reporter": "spec",
