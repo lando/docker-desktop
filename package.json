@@ -31,8 +31,8 @@
   ],
   "dependencies": {
     "@lando/argv": "^1.1.0",
-    "@oclif/core": "^1",
-    "@oclif/plugin-help": "^5"
+    "@oclif/core": "^1.8.1",
+    "debug": "^4.3.4"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
@@ -60,9 +60,15 @@
     "bin": "docker-desktop",
     "dirname": "docker-desktop",
     "commands": "./cli/commands",
-    "plugins": [
-      "@oclif/plugin-help"
-    ],
+    "hooks": {
+      "init": [
+        "./cli/hooks/bootstrap.js"
+      ],
+      "test": [
+        "./cli/hooks/test.js"
+      ]
+    },
+    "plugins": [],
     "topicSeparator": " ",
     "topics": {
       "hello": {

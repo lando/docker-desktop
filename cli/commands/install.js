@@ -4,7 +4,7 @@ class Hello extends Command {
   static description = 'Say hello';
 
   static examples = [
-    `$ docker-desktop hello friend --from oclif
+    `$ docker-desktop install --from oclif
 hello friend from oclif! (./src/commands/hello/index.ts)
 `,
   ];
@@ -24,4 +24,3 @@ hello friend from oclif! (./src/commands/hello/index.ts)
 }
 
 module.exports = Hello;
-

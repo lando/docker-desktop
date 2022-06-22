@@ -5,7 +5,7 @@ const oclif = require('@oclif/core');
 
 // Check for --debug and internally set DEBUG=* if its set
 if ((process.env.DEBUG === undefined || process.env.DEBUG === null || process.env.DEBUG === '') && argv.hasOption('--debug')) {
-  require('debug').enable(argv.getOption('--debug', {defaultValue: '*'})); // eslint-disable-line node/no-extraneous-require
+  require('debug').enable(argv.getOption('--debug', {defaultValue: '*'}));
   process.env.NODE_ENV = 'development';
   oclif.settings.debug = true;
 }

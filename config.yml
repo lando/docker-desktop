@@ -1,0 +1,23 @@
+installer:
+  default-version:
+  allowed-versions:
+
+
+
+
+# AUTOMATICALLY GENERATE THE BELOW?
+controllers:
+  - id:
+    min:
+    max:
+    os:
+    arch:
+    file:
+
+installers:
+  - id:
+    version:
+    os:
+    arch:
+    file:
+
